@@ -7,4 +7,5 @@
 #    self.higgs_params = {'mHsq': self.params['mHsq'], 'lambda': self.params['lambda'], 'g1': self.params['g1'], 'g2': self.params['g2'], 'yt': self.params['yt'], 'lambda_SH': self.params['lambda_SH'], 'N': self.params['N'] }
 #    self.w_params = {'g2': self.params['g2']}
 #    self.z_params = {'g1': self.params['g1'], 'g2': self.params['g2']}
+#    
 #  
