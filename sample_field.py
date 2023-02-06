@@ -13,4 +13,4 @@ class field:
 
     def mass(self, id, h, phi, T):
         if self.name == 'sm_higgs':
-            
+            pass
