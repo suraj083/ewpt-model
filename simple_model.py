@@ -1,3 +1,7 @@
+"""Created on Monday, February 6th 2023
+   Author: Suraj Prakash
+"""
+
 # Here we will create a model class whose subclasses would correspond to the various example cases - sm, bsm, sm+dilaton, bsm + dilaton,
 # 
 #
@@ -16,57 +20,3 @@
 #    t_params = {'yt': self.params['yt']}
 #    b_params = {'yb': self.params['yb']}
 #    
-#    
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 

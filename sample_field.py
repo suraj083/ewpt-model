@@ -1,3 +1,8 @@
+"""Created on Monday, February 6th 2023
+   Author: Suraj Prakash
+"""
+
+
 # In this case we will only define a field class and the initialization that was happening inside the model class will happen outside
 # 
 sample_field_id_list = ['sm_higgs', 'bsm_scalar', 'w_boson_t', 'w_boson_l', 'z_boson_t', 'z_boson_l', 'photon_l' 't_quark', 'b_quark']
