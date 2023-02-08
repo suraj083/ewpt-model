@@ -16,6 +16,6 @@ class field:
         self.name = id
         self.params = param_dict
 
-    def mass(self, id, h, phi, T):
+    def mass(self, id, h, T):
         if self.name == 'sm_higgs':
             pass
