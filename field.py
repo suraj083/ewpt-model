@@ -12,7 +12,7 @@ sample_param_dict = {'g1':1, 'g2':1, 'yt':1, 'yb':1, 'mHsq':1, 'mSsq':1, 'lmbd':
 #
 
 class field:
-    def __init__(self, id, param_dict):
+    def __init__(self, id: str, param_dict: dict):
         self.name = id
         self.params = param_dict
 
