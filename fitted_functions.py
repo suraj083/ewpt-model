@@ -1,0 +1,1 @@
+# load JB, JF and xlogx models in this script and define functions that apply these on given input
