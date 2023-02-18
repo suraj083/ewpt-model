@@ -15,7 +15,7 @@ class model:
       try:
          if (not eft):
             if bsm:
-               assert set(param_dict.keys()).__eq__(set(params_bsm))
+               assert set(param_dict.keys()).__eq__(set(params_bsm)) # perhaps this statement along with adding zero-valued keys to the dictionary can be combined together in a function
             else:
                assert set(param_dict.keys()).__eq__(set(params_sm))
 
