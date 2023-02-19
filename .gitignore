@@ -6,3 +6,4 @@ NN-fitting/Jf/.ipynb_checkpoints/*
 rough.py
 .__pycache__/*
 Old/*
+.DS_Store
