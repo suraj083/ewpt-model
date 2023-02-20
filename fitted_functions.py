@@ -1,4 +1,6 @@
-# load JB, JF and xlogx models in this script and define functions that apply these on given input
+"""Created on Tuesday, February 21st 2023
+   Author: Suraj Prakash
+"""
 
 def JB():
     pass

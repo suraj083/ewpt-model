@@ -2,28 +2,34 @@
    Author: Suraj Prakash
 """
 from field import field
+from auxiliary import fill_params
 
-params_sm = ['g1', 'g2', 'yt', 'yb', 'mHsq', 'lmbd']
-params_bsm = ['g1', 'g2', 'yt', 'yb', 'mHsq', 'mSsq', 'lmbd', 'lmbd_SH', 'lmbd_S', 'N']
-params_eft = ['g1', 'g2', 'yt', 'yb', 'mHsq', 'lmbd'] # add Wilson Coefficients here
+params_sm = ['g1', 'g2', 'yt', 'yb', 'mHsq', 'lmbd', 'vevh']
+params_bsm = ['g1', 'g2', 'yt', 'yb', 'mHsq', 'mSsq', 'lmbd', 'lmbd_SH', 'lmbd_S', 'N', 'vevh']
+params_eft = ['g1', 'g2', 'yt', 'yb', 'mHsq', 'lmbd', 'vevh'] # add Wilson Coefficients here
 
 class model:
    _default_field_list = ['sm_higgs', 'goldstone', 'bsm_scalar', 'w_boson_t', 'w_boson_l', 'z_boson_t', 'z_boson_l', 'photon_l', 't_quark', 'b_quark']
 
-   def __init__(self, param_dict: dict, field_list: list = _default_field_list, bsm: bool = True, eft: bool = False, large_T_approx: bool = False):
+   def __init__(self, param_dict: dict, field_list: list = _default_field_list, bsm: bool = True, eft: bool = False):
       
+      assert len(param_dict) > 0, "Provide at least"
+
       try:
          if (not eft):
             if bsm:
-               assert set(param_dict.keys()).__eq__(set(params_bsm)) # perhaps this statement along with adding zero-valued keys to the dictionary can be combined together in a function
+               assert set(param_dict.keys()).issubset(set(params_bsm))
+               self.params = fill_params(params_bsm, param_dict)
             else:
-               assert set(param_dict.keys()).__eq__(set(params_sm))
+               assert set(param_dict.keys()).issubset(set(params_sm))
+               self.params = fill_params(params_sm, param_dict)
 
          else:
             if bsm:
                raise ValueError
             else:
-               assert set(param_dict.keys()).__eq__(set(params_eft))
+               assert set(param_dict.keys()).issubset(set(params_eft))
+               self.params = fill_params(params_eft, param_dict)
 
       except ValueError:
          print("Model cannot be initialized with both EFT and BSM parameters simultaneously set to true.")
@@ -34,13 +40,12 @@ class model:
       self.params = param_dict
       self.is_bsm = bsm
       self.is_eft = eft
-      self.large_T_approx = large_T_approx
 
       assert set(field_list).issubset(set(self._default_field_list)), "Invalid field name in field_list"
-      assert len(field_list) > 0, "Empty list of fields"
+      # assert len(field_list) > 0, "Empty list of fields"
       self.field_name_list = field_list
 
-
+      self.field_object_list = [field(field_name=name, param_dict=self.params, bsm=self.is_bsm, eft=self.is_eft) for name in self.field_name_list]
 
       # # segregating SM Higgs and goldstones from all other fields
       # self._scalar_list = ['sm_higgs', 'goldstone']
@@ -87,12 +92,12 @@ class model:
    #    except ValueError:
    #       print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
 
-   def cw_potential(self, h, T, scheme: str):
+   def cw_potential(self, h, T, **renorm):
       # return self._cw_potential_regular(h, T, scheme) + self._cw_potential_unusual(h, T, scheme)
       try:
-         if scheme == 'MS-Bar':
-            pass
-         elif scheme == 'On-shell':
+         if renorm['scheme'] == 'MS-Bar':
+            mu = renorm['scale']
+         elif renorm['scheme'] == 'On-shell':
             pass
          else:
             raise ValueError
@@ -125,12 +130,12 @@ class model:
    #    except ValueError:
    #       print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
 
-   def cw_potential_deriv(self, h, T, scheme: str):
+   def cw_potential_deriv(self, h, T, **renorm):
       #return self._cw_potential_deriv_regular(h, T, scheme) + self._cw_potential_deriv_unusual(h, T, scheme)
       try:
-         if scheme == 'MS-Bar':
-            pass
-         elif scheme == 'On-shell':
+         if renorm['scheme'] == 'MS-Bar':
+            mu = renorm['scale']
+         elif renorm['scheme'] == 'On-shell':
             pass
          else:
             raise ValueError
@@ -139,18 +144,21 @@ class model:
          print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
 
    # defining the finite-temperature potential and its derivative(s)
-   def finite_T_potential(self, h, T):
+   def finite_T_potential(self, h, T, large_T_approx: bool):
       pass
 
-   def finite_T_potential_deriv(self, h, T):
+   def finite_T_potential_deriv(self, h, T, large_T_approx: bool):
       pass
 
    # total potential and its derivative(s)
 
-   def total_potential(self, h, T, scheme: str):
-      return self.cw_potential(h, T, scheme) + self.finite_T_potential(h, T)
+   def total_potential(self, h, T, large_T_approx: bool, **renorm):
+      return self.cw_potential(h, T, **renorm) + self.finite_T_potential(h, T)
 
-   def total_potential_deriv(self, h, T, scheme: str):
-      return self.cw_potential_deriv(h, T, scheme) + self.finite_T_potential_deriv(h, T)
+   def total_potential_deriv(self, h, T, large_T_approx: bool, **renorm):
+      return self.cw_potential_deriv(h, T, **renorm) + self.finite_T_potential_deriv(h, T)
+
+
+
 
       
