@@ -37,22 +37,24 @@ class model:
       self.large_T_approx = large_T_approx
 
       assert set(field_list).issubset(set(self._default_field_list)), "Invalid field name in field_list"
+      assert len(field_list) > 0, "Empty list of fields"
       self.field_name_list = field_list
 
 
-      # segregating SM Higgs and goldstones from all other fields
-      self._scalar_list = ['sm_higgs', 'goldstone']
-      self._nonscalar_list = list(set(self.field_name_list).difference(set(self._scalar_list)))
 
-      self._scalar_object_list = [field(field_name=name, param_dict=self.params, bsm=self.is_bsm, eft=self.is_eft) for name in self._scalar_list]
-      self._nonscalar_object_list = [field(field_name=name, param_dict=self.params, bsm=self.is_bsm, eft=self.is_eft) for name in self._nonscalar_list]
+      # # segregating SM Higgs and goldstones from all other fields
+      # self._scalar_list = ['sm_higgs', 'goldstone']
+      # self._nonscalar_list = list(set(self.field_name_list).difference(set(self._scalar_list)))
 
-      # segregating fermions and bosons
-      self._fermion_list = ['t_quark', 'b_quark']
-      self._boson_list = list(set(self.field_name_list).difference(set(self._fermion_list)))
+      # self._scalar_object_list = [field(field_name=name, param_dict=self.params, bsm=self.is_bsm, eft=self.is_eft) for name in self._scalar_list]
+      # self._nonscalar_object_list = [field(field_name=name, param_dict=self.params, bsm=self.is_bsm, eft=self.is_eft) for name in self._nonscalar_list]
 
-      self._fermion_object_list = [field(field_name=name, param_dict=self.params, bsm=self.is_bsm, eft=self.is_eft) for name in self._fermion_list]
-      self._boson_object_list = [field(field_name=name, param_dict=self.params, bsm=self.is_bsm, eft=self.is_eft) for name in self._boson_list]
+      # # segregating fermions and bosons
+      # self._fermion_list = ['t_quark', 'b_quark']
+      # self._boson_list = list(set(self.field_name_list).difference(set(self._fermion_list)))
+
+      # self._fermion_object_list = [field(field_name=name, param_dict=self.params, bsm=self.is_bsm, eft=self.is_eft) for name in self._fermion_list]
+      # self._boson_object_list = [field(field_name=name, param_dict=self.params, bsm=self.is_bsm, eft=self.is_eft) for name in self._boson_list]
 
  
    def __str__(self) -> str:
@@ -61,60 +63,80 @@ class model:
 
    # assemling the Coleman-Weinberg one-loop potential and its derivative(s)
 
-   def _cw_potential_regular(self, h, T, scheme: str):
-      try:
-         if scheme == 'MS-Bar':
-            pass
-         elif scheme == 'On-shell':
-            pass
-         else:
-            raise ValueError
+   # def _cw_potential_regular(self, h, T, scheme: str):
+   #    try:
+   #       if scheme == 'MS-Bar':
+   #          pass
+   #       elif scheme == 'On-shell':
+   #          pass
+   #       else:
+   #          raise ValueError
 
-      except ValueError:
-         print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
+   #    except ValueError:
+   #       print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
 
-   def _cw_potential_unusual(self, h, T, scheme: str):
-      try:
-         if scheme == 'MS-Bar':
-            pass
-         elif scheme == 'On-shell':
-            pass
-         else:
-            raise ValueError
+   # def _cw_potential_unusual(self, h, T, scheme: str):
+   #    try:
+   #       if scheme == 'MS-Bar':
+   #          pass
+   #       elif scheme == 'On-shell':
+   #          pass
+   #       else:
+   #          raise ValueError
 
-      except ValueError:
-         print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
+   #    except ValueError:
+   #       print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
 
    def cw_potential(self, h, T, scheme: str):
-      return self._cw_potential_regular(h, T, scheme) + self._cw_potential_unusual(h, T, scheme)
+      # return self._cw_potential_regular(h, T, scheme) + self._cw_potential_unusual(h, T, scheme)
+      try:
+         if scheme == 'MS-Bar':
+            pass
+         elif scheme == 'On-shell':
+            pass
+         else:
+            raise ValueError
+
+      except ValueError:
+         print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
 
    
-   def _cw_potential_deriv_regular(self, h, T, scheme: str):
-      try:
-         if scheme == 'MS-Bar':
-            pass
-         elif scheme == 'On-shell':
-            pass
-         else:
-            raise ValueError
+   # def _cw_potential_deriv_regular(self, h, T, scheme: str):
+   #    try:
+   #       if scheme == 'MS-Bar':
+   #          pass
+   #       elif scheme == 'On-shell':
+   #          pass
+   #       else:
+   #          raise ValueError
 
-      except ValueError:
-         print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
+   #    except ValueError:
+   #       print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
 
-   def _cw_potential_deriv_unusual(self, h, T, scheme: str):
-      try:
-         if scheme == 'MS-Bar':
-            pass
-         elif scheme == 'On-shell':
-            pass
-         else:
-            raise ValueError
+   # def _cw_potential_deriv_unusual(self, h, T, scheme: str):
+   #    try:
+   #       if scheme == 'MS-Bar':
+   #          pass
+   #       elif scheme == 'On-shell':
+   #          pass
+   #       else:
+   #          raise ValueError
 
-      except ValueError:
-         print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
+   #    except ValueError:
+   #       print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
 
    def cw_potential_deriv(self, h, T, scheme: str):
-      return self._cw_potential_deriv_regular(h, T, scheme) + self._cw_potential_deriv_unusual(h, T, scheme)
+      #return self._cw_potential_deriv_regular(h, T, scheme) + self._cw_potential_deriv_unusual(h, T, scheme)
+      try:
+         if scheme == 'MS-Bar':
+            pass
+         elif scheme == 'On-shell':
+            pass
+         else:
+            raise ValueError
+
+      except ValueError:
+         print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
 
    # defining the finite-temperature potential and its derivative(s)
    def finite_T_potential(self, h, T):

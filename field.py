@@ -62,7 +62,6 @@ class field:
             -------
             float
         """
-        # replace match-case with if-else for backwards compatibility
         
         if (not self.is_eft):                       # for the case of SM and BSM Lagrangians
             if (self.name == 'sm_higgs' and self.is_bsm == True):
