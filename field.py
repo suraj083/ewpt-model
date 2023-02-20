@@ -65,74 +65,72 @@ class field:
         # replace match-case with if-else for backwards compatibility
         
         if (not self.is_eft):                       # for the case of SM and BSM Lagrangians
-            match (self.name, self.is_bsm):
-                case ('sm_higgs', True):
-                    return self.params['mHsq'] + 1.5 * self.params['lmbd'] * h**2 + ((3/80) * self.params['g1']**2 + (3/16) * self.params['g2']**2 + (1/4) * self.params['yt']**2 +(self.params['N']*self.params['lmbd_SH'] / 12)) * T**2
+            if (self.name == 'sm_higgs' and self.is_bsm == True):
+                return self.params['mHsq'] + 1.5 * self.params['lmbd'] * h**2 + ((3/80) * self.params['g1']**2 + (3/16) * self.params['g2']**2 + (1/4) * self.params['yt']**2 +(self.params['N']*self.params['lmbd_SH'] / 12)) * T**2
 
-                case ('sm_higgs', False):    
-                    return self.params['mHsq'] + 1.5 * self.params['lmbd'] * h**2 + ((3/80) * self.params['g1']**2 + (3/16) * self.params['g2']**2 + (1/4) * self.params['yt']**2 ) * T**2
+            elif (self.name == 'sm_higgs' and self.is_bsm == False):
+                return self.params['mHsq'] + 1.5 * self.params['lmbd'] * h**2 + ((3/80) * self.params['g1']**2 + (3/16) * self.params['g2']**2 + (1/4) * self.params['yt']**2 ) * T**2
+
+            elif (self.name == 'goldstone' and self.is_bsm == True):    
+                return self.params['mHsq'] + 0.5 * self.params['lmbd'] * h**2 + ((3/80) * self.params['g1']**2 + (3/16) * self.params['g2']**2 + (1/4) * self.params['yt']**2 +(self.params['N']*self.params['lmbd_SH'] / 12)) * T**2
                 
-                case ('goldstone', True):
-                    return self.params['mHsq'] + 0.5 * self.params['lmbd'] * h**2 + ((3/80) * self.params['g1']**2 + (3/16) * self.params['g2']**2 + (1/4) * self.params['yt']**2 +(self.params['N']*self.params['lmbd_SH'] / 12)) * T**2
+            elif (self.name == 'goldstone' and self.is_bsm == False):    
+                return self.params['mHsq'] + 0.5 * self.params['lmbd'] * h**2 + ((3/80) * self.params['g1']**2 + (3/16) * self.params['g2']**2 + (1/4) * self.params['yt']**2 ) * T**2
                 
-                case ('goldstone', False):    
-                    return self.params['mHsq'] + 0.5 * self.params['lmbd'] * h**2 + ((3/80) * self.params['g1']**2 + (3/16) * self.params['g2']**2 + (1/4) * self.params['yt']**2 ) * T**2
-                
-                case ('bsm_scalar', True):
-                    return self.params['mSsq'] + 0.5 * self.params['lmbd_SH'] * h**2 + ((self.params['lmbd_S'] / 12) * (self.params['N']+1) + (self.params['lmbd_SH'] / 6)) * T**2 
+            elif (self.name == 'bsm_scalar' and self.is_bsm == True):
+                return self.params['mSsq'] + 0.5 * self.params['lmbd_SH'] * h**2 + ((self.params['lmbd_S'] / 12) * (self.params['N']+1) + (self.params['lmbd_SH'] / 6)) * T**2 
 
-                case ('bsm_scalar', False):
-                    return 0.0    
+            elif (self.name == 'bsm_scalar' and self.is_bsm == False):
+                return 0.0   
 
-                case ('w_boson_t', _):
-                    return 0.25 * self.params['g2']**2 * h**2
+            elif self.name == 'w_boson_t': 
+                return 0.25 * self.params['g2']**2 * h**2
 
-                case ('w_boson_l', _):
-                    return 0.25 * self.params['g2']**2 * h**2 + (11/6) * self.params['g2']**2 * T**2
+            elif self.name == 'w_boson_l':
+                return 0.25 * self.params['g2']**2 * h**2 + (11/6) * self.params['g2']**2 * T**2
 
-                case ('z_boson_t', _):
-                    return 0.25 * (0.6 * self.params['g1']**2 + self.params['g2']**2) * h**2
+            elif self.name == 'z_boson_t':
+                return 0.25 * (0.6 * self.params['g1']**2 + self.params['g2']**2) * h**2
 
-                case ('z_boson_l', _):
-                    return 0.5 * (0.25 * (0.6 * self.params['g1']**2 + self.params['g2']**2) * h**2 + (11/6) * self.params['g2']**2 * T**2 + (11/10) * self.params['g1']**2 * T**2 + self._delta(h,T))
+            elif self.name == 'z_boson_l':
+                return 0.5 * (0.25 * (0.6 * self.params['g1']**2 + self.params['g2']**2) * h**2 + (11/6) * self.params['g2']**2 * T**2 + (11/10) * self.params['g1']**2 * T**2 + self._delta(h,T))
 
-                case ('photon_l', _):
-                    return 0.5 * (0.25 * (0.6 * self.params['g1']**2 + self.params['g2']**2) * h**2 + (11/6) * self.params['g2']**2 * T**2 + (11/10) * self.params['g1']**2 * T**2 - self._delta(h,T))
+            elif self.name == 'photon_l':
+                return 0.5 * (0.25 * (0.6 * self.params['g1']**2 + self.params['g2']**2) * h**2 + (11/6) * self.params['g2']**2 * T**2 + (11/10) * self.params['g1']**2 * T**2 - self._delta(h,T))
 
-                case ('t_quark', _):
-                    return 0.5 * self.params['yt']**2 * h**2
+            elif self.name == 't_quark':
+                return 0.5 * self.params['yt']**2 * h**2
 
-                case ('b_quark', _):
-                    return 0.5 * self.params['yb']**2 * h**2
+            elif self.name == 'b_quark':
+                return 0.5 * self.params['yb']**2 * h**2
 
         else:                                       # for SMEFT
-            match self.name:
-                case 'sm_higgs':
-                    pass
+            if self.name == 'sm_higgs':
+                pass
 
-                case 'goldstone':
-                    pass
+            elif self.name == 'goldstone':
+                pass
 
-                case 'w_boson_t':
-                    pass
+            elif self.name == 'w_boson_t':
+                pass
 
-                case 'w_boson_l':
-                    pass
+            elif self.name == 'w_boson_l':
+                pass
 
-                case 'z_boson_t':
-                    pass
+            elif self.name == 'z_boson_t':
+                pass
 
-                case 'z_boson_l':
-                    pass
+            elif self.name == 'z_boson_l':
+                pass
 
-                case 'photon_l':
-                    pass
+            elif self.name == 'photon_l':
+                pass
 
-                case 't_quark':
-                    pass
+            elif self.name == 't_quark':
+                pass
 
-                case 'b_quark':
-                    pass
+            elif self.name == 'b_quark':
+                pass
 
     def mass_field_deriv(self, h, T):
         """ Derivative of thermal masses of individual fields w.r.t. the SM Higgs as a parameter
@@ -147,65 +145,63 @@ class field:
             float
         """
         if (not self.is_eft):                       # for the case of SM and BSM Lagrangians
-            match (self.name, self.is_bsm):
-                case ('bsm_scalar', True):
-                    return self.params['lmbd_SH'] * h    
+            if (self.name == 'bsm_scalar' and self.is_bsm == True):
+                return self.params['lmbd_SH'] * h    
 
-                case ('bsm_scalar', False):
-                    return 0.0 
+            elif (self.name == 'bsm_scalar' and self.is_bsm == False):
+                return 0.0 
                 
-                case ('sm_higgs', _):
-                    return 3 * self.params['lmbd'] * h
+            elif self.name == 'sm_higgs':
+                return 3 * self.params['lmbd'] * h
 
-                case ('goldstone', _):
-                    return self.params['lmbd'] * h
+            elif self.name == 'goldstone':
+                return self.params['lmbd'] * h
                 
-                case ('w_boson_t' | 'w_boson_l', _):
-                    return 0.5 * self.params['g2']**2 * h
+            elif self.name in ['w_boson_t', 'w_boson_l']:
+                return 0.5 * self.params['g2']**2 * h
 
-                case ('z_boson_t', _):
-                    return 0.5 * (0.6 * self.params['g1']**2 + self.params['g2']**2) * h
+            elif self.name == 'z_boson_t':
+                return 0.5 * (0.6 * self.params['g1']**2 + self.params['g2']**2) * h
 
-                case ('z_boson_l', _):
-                    return 0.5 * (0.5 * (0.6 * self.params['g1']**2 + self.params['g2']**2) * h + self._delta_field_deriv(h,T))
+            elif self.name == 'z_boson_l':
+                return 0.5 * (0.5 * (0.6 * self.params['g1']**2 + self.params['g2']**2) * h + self._delta_field_deriv(h,T))
 
-                case ('photon_l', _):
-                    return 0.5 * (0.5 * (0.6 * self.params['g1']**2 + self.params['g2']**2) * h - self._delta_field_deriv(h,T))
+            elif self.name == 'photon_l':
+                return 0.5 * (0.5 * (0.6 * self.params['g1']**2 + self.params['g2']**2) * h - self._delta_field_deriv(h,T))
 
-                case ('t_quark', _):
-                    return self.params['yt']**2 * h
+            elif self.name == 't_quark':
+                return self.params['yt']**2 * h
 
-                case ('b_quark', _):
-                    return self.params['yb']**2 * h 
+            elif self.name == 'b_quark':
+                return self.params['yb']**2 * h 
 
         else:                       # for SMEFT
-            match self.name:
-                case 'sm_higgs':
-                    pass
+            if self.name == 'sm_higgs':
+                pass
 
-                case 'goldstone':
-                    pass
+            elif self.name == 'goldstone':
+                pass
 
-                case 'w_boson_t':
-                    pass
+            elif self.name == 'w_boson_t':
+                pass
 
-                case 'w_boson_l':
-                    pass
+            elif self.name == 'w_boson_l':
+                pass
 
-                case 'z_boson_t':
-                    pass
+            elif self.name == 'z_boson_t':
+                pass
 
-                case 'z_boson_l':
-                    pass
+            elif self.name == 'z_boson_l':
+                pass
 
-                case 'photon_l':
-                    pass
+            elif self.name == 'photon_l':
+                pass
 
-                case 't_quark':
-                    pass
+            elif self.name == 't_quark':
+                pass
 
-                case 'b_quark':
-                    pass
+            elif self.name == 'b_quark':
+                pass
 
     def mass_temperature_deriv(self, h, T):
         """ Derivative of thermal masses of individual fields w.r.t. the temperature parameter
@@ -220,74 +216,71 @@ class field:
             float
         """
         if (not self.is_eft):                       # for the case of SM and BSM Lagrangians
-            match (self.name, self.is_bsm):
-                case ('sm_higgs' | 'goldstone', True):
-                    return ((3/40) * self.params['g1']**2 + (3/8) * self.params['g2']**2 + (1/2) * self.params['yt']**2 + (self.params['N']*self.params['lmbd_SH'] / 6)) * T
+            if (self.name in ['sm_higgs', 'goldstone'] and self.is_bsm == True):
+                return ((3/40) * self.params['g1']**2 + (3/8) * self.params['g2']**2 + (1/2) * self.params['yt']**2 + (self.params['N']*self.params['lmbd_SH'] / 6)) * T
 
-                case ('sm_higgs' | 'goldstone', False):    
-                    return ((3/40) * self.params['g1']**2 + (3/8) * self.params['g2']**2 + (1/2) * self.params['yt']**2 ) * T
+            elif (self.name in ['sm_higgs', 'goldstone'] and self.is_bsm == False):
+                return ((3/40) * self.params['g1']**2 + (3/8) * self.params['g2']**2 + (1/2) * self.params['yt']**2 ) * T
                                 
-                case ('bsm_scalar', True):
-                    return ((self.params['lmbd_S'] / 6) * (self.params['N']+1) + (self.params['lmbd_SH'] / 3)) * T     
+            elif (self.name == 'bsm_scalar' and self.is_bsm == True):
+                return ((self.params['lmbd_S'] / 6) * (self.params['N']+1) + (self.params['lmbd_SH'] / 3)) * T     
 
-                case ('bsm_scalar', False):
-                    return 0.0
+            elif (self.name == 'bsm_scalar' and self.is_bsm == False):
+                return 0.0
 
-                case ('w_boson_l', _):
-                    return (11/3) * self.params['g2']**2 * T
+            elif self.name == 'w_boson_l':
+                return (11/3) * self.params['g2']**2 * T
 
-                case ('z_boson_l', _):
-                    return 0.5 * ( (11/3) * self.params['g2']**2 * T + (11/5) * self.params['g1']**2 * T + self._delta_temperature_deriv(h,T))
+            elif self.name == 'z_boson_l':
+                return 0.5 * ( (11/3) * self.params['g2']**2 * T + (11/5) * self.params['g1']**2 * T + self._delta_temperature_deriv(h,T))
 
-                case ('photon_l', _):
-                    return 0.5 * ( (11/3) * self.params['g2']**2 * T + (11/5) * self.params['g1']**2 * T - self._delta_temperature_deriv(h,T))
+            elif self.name == 'photon_l':
+                return 0.5 * ( (11/3) * self.params['g2']**2 * T + (11/5) * self.params['g1']**2 * T - self._delta_temperature_deriv(h,T))
                 
-                case ('w_boson_t' | 'z_boson_t' | 't_quark' | 'b_quark', _):
+            elif self.name in ['w_boson_t', 'z_boson_t', 't_quark', 'b_quark']:
                     return 0.0
 
-        else:                       # for SMEFT
-            match self.name:
-                case 'sm_higgs':
-                    pass
+        else:                                       # for SMEFT
+            if self.name == 'sm_higgs':
+                pass
 
-                case 'goldstone':
-                    pass
+            elif self.name == 'goldstone':
+                pass
 
-                case 'w_boson_t':
-                    pass
+            elif self.name == 'w_boson_t':
+                pass
 
-                case 'w_boson_l':
-                    pass
+            elif self.name == 'w_boson_l':
+                pass
 
-                case 'z_boson_t':
-                    pass
+            elif self.name == 'z_boson_t':
+                pass
 
-                case 'z_boson_l':
-                    pass
+            elif self.name == 'z_boson_l':
+                pass
 
-                case 'photon_l':
-                    pass
+            elif self.name == 'photon_l':
+                pass
 
-                case 't_quark':
-                    pass
+            elif self.name == 't_quark':
+                pass
 
-                case 'b_quark':
-                    pass            
+            elif self.name == 'b_quark':
+                pass           
 
     def get_degrees_of_freedom(self):
         """ Returns the number of degrees of freedom for individual fields"""
 
-        match self.name:
-            case 'sm_higgs' | 'z_boson_l' | 'photon_l':
-                return 1
-            case 'goldstone':
-                return 3
-            case 'w_boson_t':
-                return 4
-            case 'w_boson_l' | 'z_boson_t':
-                return 2
-            case 't_quark', 'b_quark':
-                return -12
-            case 'bsm_scalar':
+        if self.name in ['sm_higgs', 'z_boson_l', 'photon_l']:
+            return 1
+        elif self.name == 'goldstone':
+            return 3
+        elif self.name == 'w_boson_t':
+            return 4
+        elif self.name in ['w_boson_l', 'z_boson_t']:
+            return 2
+        elif self.name in ['t_quark', 'b_quark']:
+            return -12
+        elif self.name == 'bsm_scalar':
                 return 2*self.params['N']
 
