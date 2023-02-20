@@ -4,13 +4,6 @@
 
 import tensorflow as tf
 
-# In this case we will only define a field class and the initialization that was happening inside the model class will happen outside
-# 
-# sample_field_id_list = ['sm_higgs', 'goldstone', 'bsm_scalar', 'w_boson_t', 'w_boson_l', 'z_boson_t', 'z_boson_l', 'photon_l' 't_quark', 'b_quark']
-# sample_param_dict = {'g1':0.4632, 'g2':0.6485, 'yt':0.92849, 'yb':0.0167, 'mHsq':-1.19109, 'mSsq':0.0625, 'lmbd':0.2582, 'lmbd_SH':0.85, 'lmbd_S':0.1, 'N':0.5}
-#
-#
-#
 # In a later iteration - perhaps individual fields can be defined as members of an enum, also it may be a good idea to define different subclasses for scalar, fermions and vector bosons.
 class field:
     
