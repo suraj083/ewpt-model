@@ -2,11 +2,11 @@
    Author: Suraj Prakash
 """
 
-def JB():
+def fitted_JB(x):
     pass
 
-def JF():
+def fitted_JF(x):
     pass
 
-def xlogx():
+def fitted_xlogx(x):
     pass
