@@ -43,7 +43,7 @@ class field:
         return (11/15) * T * (3 * self.params['g1']**2 - 5 * self.params['g2']**2)**2 * (3 * h**2 + 22 * T**2) / tf.math.sqrt(-2640 * T**2 * self.params['g1']**2 * self.params['g2']**2 * (11 * T**2 + 3 * h**2) + (22 * T**2 + 3 * h**2)**2 * (5 * self.params['g2']**2 + 3 * self.params['g1']**2)**2)
 
 
-    def mass(self, h, T):
+    def mass_sq(self, h, T):
         """ Definition of thermal masses of individual fields
             
             Parameters
@@ -124,7 +124,7 @@ class field:
             elif self.name == 'b_quark':
                 pass
 
-    def mass_field_deriv(self, h, T):
+    def mass_sq_field_deriv(self, h, T):
         """ Derivative of thermal masses of individual fields w.r.t. the SM Higgs as a parameter
             
             Parameters
@@ -195,7 +195,7 @@ class field:
             elif self.name == 'b_quark':
                 pass
 
-    def mass_temperature_deriv(self, h, T):
+    def mass_sq_temperature_deriv(self, h, T):
         """ Derivative of thermal masses of individual fields w.r.t. the temperature parameter
             
             Parameters
@@ -260,19 +260,19 @@ class field:
             elif self.name == 'b_quark':
                 pass           
 
-    def get_degrees_of_freedom(self):
+    def get_degrees_of_freedom(self) -> float:
         """ Returns the number of degrees of freedom for individual fields"""
 
         if self.name in ['sm_higgs', 'z_boson_l', 'photon_l']:
-            return 1
+            return 1.0
         elif self.name == 'goldstone':
-            return 3
+            return 3.0
         elif self.name == 'w_boson_t':
-            return 4
+            return 4.0
         elif self.name in ['w_boson_l', 'z_boson_t']:
-            return 2
+            return 2.0
         elif self.name in ['t_quark', 'b_quark']:
-            return -12
+            return -12.0
         elif self.name == 'bsm_scalar':
-                return 2*self.params['N']
+                return 2.0*self.params['N']
 
