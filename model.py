@@ -62,7 +62,7 @@ class model:
       vevhc = tf.cast(self.params['vevh'], tf.complex64)
       T = Temp/80.0
       
-      potV = 0.5 * self.params['mHsq'] * (hc**2 - vevhc**2) + 0.125 * self.params['lmbd'] * (hc**4 - vevhc**4)
+      potV = tf.math.real(0.5 * self.params['mHsq'] * (hc**2 - vevhc**2) + 0.125 * self.params['lmbd'] * (hc**4 - vevhc**4))
 
       frac = (3.0 / 2.0)
 
@@ -76,9 +76,9 @@ class model:
             if field_obj.name in ['w_boson_t', 'w_boson_l', 'z_boson_t', 'z_boson_l', 'photon_l']:
                frac = (5.0 / 6.0)
 
-            potV += field_obj.get_dof() * ((tf.math.xlogy(field_obj.mass_sq(hc,T)**2, field_obj.mass_sq(hc,T)/mu**2) - tf.math.xlogy(field_obj.mass_sq(vevhc,0)**2, field_obj.mass_sq(vevhc,0)/mu**2)) - frac*(field_obj.mass_sq(hc,T)**2 - field_obj.mass_sq(vevhc,0)**2)) / (64*np.math.pi**2)
+            potV = potV + tf.math.real(field_obj.get_dof() * ((tf.math.xlogy(field_obj.mass_sq(hc,T)**2, field_obj.mass_sq(hc,T)/mu**2) - tf.math.xlogy(field_obj.mass_sq(vevhc,0)**2, field_obj.mass_sq(vevhc,0)/mu**2)) - frac*(field_obj.mass_sq(hc,T)**2 - field_obj.mass_sq(vevhc,0)**2)) / (64*np.math.pi**2))
 
-         return tf.math.real(potV)
+         return potV
 
       elif renorm['scheme'] == "On-shell":
          for field_obj in self.field_object_list:
