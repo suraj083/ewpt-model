@@ -7,6 +7,7 @@ import keras
 
 model_Jb = keras.models.load_model("Jb_model") 
 model_Jf = keras.models.load_model("Jf_model") 
+model_xlogx = keras.models.load_model("xlogx_model")
 
 
 def fitted_JB(var):
@@ -31,5 +32,5 @@ def fitted_dJF(var):
         y_Jf = model_Jf(var_f)
     return tape.gradient(y_Jf, var_f)
 
-def fitted_xlogx(x):
-    pass
+def fitted_xlogx(var):
+    return model_xlogx(var)
