@@ -34,3 +34,4 @@ def fitted_dJF(var):
 
 def fitted_xlogx(var):
     return model_xlogx(var)
+  

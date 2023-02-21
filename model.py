@@ -86,11 +86,11 @@ class model:
          
          
    def cw_potential_deriv(self, h, Temp, **renorm):
-      hc = tf.cast(h, tf.complex64)
-      vevhc = tf.cast(self.params['vevh'], tf.complex64)
+      #hc = tf.cast(h, tf.complex64)
+      #vevhc = tf.cast(self.params['vevh'], tf.complex64)
       T = Temp/80.0
       
-      dpotV = self.params['mHsq'] * hc + 0.5 * self.params['lmbd'] * hc**3 
+      dpotV = self.params['mHsq'] * h + 0.5 * self.params['lmbd'] * h**3 
 
       if renorm['scheme'] not in ["MS-Bar", "On-shell"]:
          print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
@@ -103,9 +103,9 @@ class model:
             if field_obj.name in ['w_boson_t', 'w_boson_l', 'z_boson_t', 'z_boson_l', 'photon_l']:
                const_factor = np.log(mu**2) + (1.0 / 3.0)
                
-            dpotV += 2 * field_obj.get_dof() * field_obj.mass_sq_field_deriv(hc,T) * (fitted_xlogx(field_obj.mass_sq(hc,T)) - field_obj.mass_sq(hc,T) * const_factor ) / (64 * np.math.pi**2)
+            dpotV = dpotV + 2 * field_obj.get_dof() * field_obj.mass_sq_field_deriv(h,T) * (fitted_xlogx(field_obj.mass_sq(h,T)) - field_obj.mass_sq(h,T) * const_factor ) / (64 * np.math.pi**2)
                
-         return tf.math.real(dpotV)
+         return dpotV
                
       elif renorm['scheme'] == 'On-shell':
          for field_obj in self.field_object_list:
