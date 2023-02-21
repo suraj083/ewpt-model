@@ -1,6 +1,7 @@
 """Created on Monday, February 6th 2023
    Author: Suraj Prakash
 """
+import sys
 import tensorflow as tf
 import numpy as np
 from field import field
@@ -16,7 +17,7 @@ class model:
 
    def __init__(self, param_dict: dict, field_list: list = _default_field_list, bsm: bool = True, eft: bool = False):
       
-      assert len(param_dict) > 0, "Provide at least"
+      assert len(param_dict) > 0
 
       try:
          if (not eft):
@@ -36,9 +37,11 @@ class model:
 
       except ValueError:
          print("Model cannot be initialized with both EFT and BSM parameters simultaneously set to true.")
+         sys.exit()
 
       except AssertionError:
          print("Wrong or missing parameter.")
+         sys.exit()
 
       self.is_bsm = bsm
       self.is_eft = eft
@@ -55,7 +58,6 @@ class model:
 
 
    def cw_potential(self, h, Temp, **renorm):
-      # return self._cw_potential_regular(h, T, scheme) + self._cw_potential_unusual(h, T, scheme)
       hc = tf.cast(h, tf.complex64)
       vevhc = tf.cast(self.params['vevh'], tf.complex64)
       T = Temp/80.0
@@ -64,58 +66,51 @@ class model:
 
       frac = (3.0 / 2.0)
 
-      try:
-         if renorm['scheme'] == 'MS-Bar':
-            mu = renorm['scale']
-
-            for field_obj in self.field_object_list:
-               if field_obj.name in ['w_boson_t', 'w_boson_l', 'z_boson_t', 'z_boson_l', 'photon_l']:
-                  frac = (5.0 / 6.0)
-
-               potV += field_obj.get_dof() * ((tf.math.xlogy(field_obj.mass_sq(hc,T)**2, field_obj.mass_sq(hc,T)/mu**2) - tf.math.xlogy(field_obj.mass_sq(vevhc,0)**2, field_obj.mass_sq(vevhc,0)/mu**2)) - frac*(field_obj.mass_sq(hc,T)**2 - field_obj.mass_sq(vevhc,0)**2)) / (64*np.math.pi**2)
-
-            return tf.math.real(potV)
-
-         elif renorm['scheme'] == 'On-shell':
-            for field_obj in self.field_object_list:
-               pass # check the cut-off reg Mathematica implementation
-         
-         else:
-            raise ValueError
-
-      except ValueError:
+      if renorm['scheme'] not in ["MS-Bar", "On-shell"]:
          print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
          
+      elif renorm['scheme'] == "MS-Bar":
+         mu = renorm['scale']
 
+         for field_obj in self.field_object_list:
+            if field_obj.name in ['w_boson_t', 'w_boson_l', 'z_boson_t', 'z_boson_l', 'photon_l']:
+               frac = (5.0 / 6.0)
+
+            potV += field_obj.get_dof() * ((tf.math.xlogy(field_obj.mass_sq(hc,T)**2, field_obj.mass_sq(hc,T)/mu**2) - tf.math.xlogy(field_obj.mass_sq(vevhc,0)**2, field_obj.mass_sq(vevhc,0)/mu**2)) - frac*(field_obj.mass_sq(hc,T)**2 - field_obj.mass_sq(vevhc,0)**2)) / (64*np.math.pi**2)
+
+         return tf.math.real(potV)
+
+      elif renorm['scheme'] == "On-shell":
+         for field_obj in self.field_object_list:
+            pass # check the cut-off reg Mathematica implementation
+         
+         
    def cw_potential_deriv(self, h, Temp, **renorm):
       hc = tf.cast(h, tf.complex64)
       vevhc = tf.cast(self.params['vevh'], tf.complex64)
       T = Temp/80.0
       
-      dpotV = tf.math.real( self.params['mHsq'] * hc + 0.5 * self.params['lmbd'] * hc**3 )
+      dpotV = self.params['mHsq'] * hc + 0.5 * self.params['lmbd'] * hc**3 
 
-      try:
-         if renorm['scheme'] == 'MS-Bar':
-            mu = renorm['scale']
-            const_factor = tf.math.log(mu**2) + 1.0
-
-            for field_obj in self.field_object_list:
-               if field_obj.name in ['w_boson_t', 'w_boson_l', 'z_boson_t', 'z_boson_l', 'photon_l']:
-                  const_factor = tf.math.log(mu**2) + (1.0 / 3.0)
-               
-               dpotV += 2 * field_obj.get_dof() * field_obj.mass_sq_field_deriv(hc,T) * (fitted_xlogx(field_obj.mass_sq(hc,T)) - field_obj.mass_sq(hc,T) * const_factor ) / (64 * np.math.pi**2)
-            
-            return tf.math.real(dpotV)
-               
-         elif renorm['scheme'] == 'On-shell':
-            for field_obj in self.field_object_list:
-               pass
-
-         else:
-            raise ValueError
-
-      except ValueError:
+      if renorm['scheme'] not in ["MS-Bar", "On-shell"]:
          print("Unknown renormalization scheme entered. Expected 'MS-Bar' or 'On-shell'")
+
+      elif renorm['scheme'] == "MS-Bar":
+         mu = renorm['scale']
+         const_factor = np.log(mu**2) + 1.0
+
+         for field_obj in self.field_object_list:
+            if field_obj.name in ['w_boson_t', 'w_boson_l', 'z_boson_t', 'z_boson_l', 'photon_l']:
+               const_factor = np.log(mu**2) + (1.0 / 3.0)
+               
+            dpotV += 2 * field_obj.get_dof() * field_obj.mass_sq_field_deriv(hc,T) * (fitted_xlogx(field_obj.mass_sq(hc,T)) - field_obj.mass_sq(hc,T) * const_factor ) / (64 * np.math.pi**2)
+               
+         return tf.math.real(dpotV)
+               
+      elif renorm['scheme'] == 'On-shell':
+         for field_obj in self.field_object_list:
+            pass
+
 
    # defining the finite-temperature potential and its derivative(s)
    def finite_T_potential(self, h, Temp, large_T_approx: bool):
