@@ -40,7 +40,6 @@ class model:
       except AssertionError:
          print("Wrong or missing parameter.")
 
-      self.params = param_dict
       self.is_bsm = bsm
       self.is_eft = eft
 
@@ -63,10 +62,11 @@ class model:
       
       potV = 0.5 * self.params['mHsq'] * (hc**2 - vevhc**2) + 0.125 * self.params['lmbd'] * (hc**4 - vevhc**4)
 
+      frac = (3.0 / 2.0)
+
       try:
          if renorm['scheme'] == 'MS-Bar':
             mu = renorm['scale']
-            frac = (3.0 / 2.0)
 
             for field_obj in self.field_object_list:
                if field_obj.name in ['w_boson_t', 'w_boson_l', 'z_boson_t', 'z_boson_l', 'photon_l']:
@@ -77,8 +77,6 @@ class model:
             return tf.math.real(potV)
 
          elif renorm['scheme'] == 'On-shell':
-            frac = (3.0 / 2.0)
-
             for field_obj in self.field_object_list:
                pass # check the cut-off reg Mathematica implementation
          
@@ -94,22 +92,25 @@ class model:
       vevhc = tf.cast(self.params['vevh'], tf.complex64)
       T = Temp/80.0
       
-      potV = tf.math.real( self.params['mHsq'] * hc + 0.5 * self.params['lmbd'] * hc**3 )
+      dpotV = tf.math.real( self.params['mHsq'] * hc + 0.5 * self.params['lmbd'] * hc**3 )
 
       try:
          if renorm['scheme'] == 'MS-Bar':
             mu = renorm['scale']
+            const_factor = tf.math.log(mu**2) + 1.0
 
             for field_obj in self.field_object_list:
                if field_obj.name in ['w_boson_t', 'w_boson_l', 'z_boson_t', 'z_boson_l', 'photon_l']:
-                  potV += tf.math.real(() / (64 * np.math.pi**2))
+                  const_factor = tf.math.log(mu**2) + (1.0 / 3.0)
                
-               elif field_obj.name in ['sm_higgs', 'goldstone', 'bsm_scalar', 'b_quark', 't_quark']:
-                  potV += tf.math.real(()/(64 * np.math.pi**2))
-
+               dpotV += 2 * field_obj.get_dof() * field_obj.mass_sq_field_deriv(hc,T) * (fitted_xlogx(field_obj.mass_sq(hc,T)) - field_obj.mass_sq(hc,T) * const_factor ) / (64 * np.math.pi**2)
+            
+            return tf.math.real(dpotV)
+               
          elif renorm['scheme'] == 'On-shell':
             for field_obj in self.field_object_list:
                pass
+
          else:
             raise ValueError
 
@@ -133,7 +134,7 @@ class model:
          return (T**4) * total / (2*np.math.pi**2)
 
       else:
-         return 0
+         return 0 # may require the regulated square root helper function
 
    def finite_T_potential_deriv(self, h, Temp, large_T_approx: bool):
       if (not large_T_approx):
