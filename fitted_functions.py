@@ -2,11 +2,34 @@
    Author: Suraj Prakash
 """
 
-def fitted_JB(x):
-    pass
+import tensorflow as tf
+import keras
 
-def fitted_JF(x):
-    pass
+model_Jb = keras.models.load_model("Jb_model") 
+model_Jf = keras.models.load_model("Jf_model") 
+
+
+def fitted_JB(var):
+    return model_Jb(var)
+
+def fitted_JF(var):
+    return model_Jf(var)
+
+def fitted_dJB(var):
+    var_b = tf.cast(var, tf.float32)
+
+    with tf.GradientTape() as tape:
+        tape.watch(var_b) 
+        y_Jb = model_Jb(var_b)
+    return tape.gradient(y_Jb, var_b)
+
+def fitted_dJF(var):
+    var_f = tf.cast(var, tf.float32)
+
+    with tf.GradientTape() as tape:
+        tape.watch(var_f) 
+        y_Jf = model_Jf(var_f)
+    return tape.gradient(y_Jf, var_f)
 
 def fitted_xlogx(x):
     pass
