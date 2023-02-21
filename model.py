@@ -50,20 +50,6 @@ class model:
 
       self.field_object_list = [field(field_name=name, param_dict=self.params, bsm=self.is_bsm, eft=self.is_eft) for name in self.field_name_list]
 
-      # # segregating SM Higgs and goldstones from all other fields
-      # self._scalar_list = ['sm_higgs', 'goldstone']
-      # self._nonscalar_list = list(set(self.field_name_list).difference(set(self._scalar_list)))
-
-      # self._scalar_object_list = [field(field_name=name, param_dict=self.params, bsm=self.is_bsm, eft=self.is_eft) for name in self._scalar_list]
-      # self._nonscalar_object_list = [field(field_name=name, param_dict=self.params, bsm=self.is_bsm, eft=self.is_eft) for name in self._nonscalar_list]
-
-      # # segregating fermions and bosons
-      # self._fermion_list = ['t_quark', 'b_quark']
-      # self._boson_list = list(set(self.field_name_list).difference(set(self._fermion_list)))
-
-      # self._fermion_object_list = [field(field_name=name, param_dict=self.params, bsm=self.is_bsm, eft=self.is_eft) for name in self._fermion_list]
-      # self._boson_object_list = [field(field_name=name, param_dict=self.params, bsm=self.is_bsm, eft=self.is_eft) for name in self._boson_list]
-
  
    def __str__(self) -> str:
       pass
@@ -73,17 +59,28 @@ class model:
       # return self._cw_potential_regular(h, T, scheme) + self._cw_potential_unusual(h, T, scheme)
       hc = tf.cast(h, tf.complex64)
       vevhc = tf.cast(self.params['vevh'], tf.complex64)
-      T = Temp/80
+      T = Temp/80.0
       
+      potV = 0.5 * self.params['mHsq'] * (hc**2 - vevhc**2) + 0.125 * self.params['lmbd'] * (hc**4 - vevhc**4)
+
       try:
          if renorm['scheme'] == 'MS-Bar':
             mu = renorm['scale']
-            Vh_tree = tf.math.real(0.5 * self.params['mHsq'] * (hc**2 - vevhc**2) + 0.125 * self.params['lmbd'] * (hc**4 - vevhc**4))
+            frac = (3.0 / 2.0)
 
+            for field_obj in self.field_object_list:
+               if field_obj.name in ['w_boson_t', 'w_boson_l', 'z_boson_t', 'z_boson_l', 'photon_l']:
+                  frac = (5.0 / 6.0)
 
+               potV += field_obj.get_dof() * ((tf.math.xlogy(field_obj.mass_sq(hc,T)**2, field_obj.mass_sq(hc,T)/mu**2) - tf.math.xlogy(field_obj.mass_sq(vevhc,0)**2, field_obj.mass_sq(vevhc,0)/mu**2)) - frac*(field_obj.mass_sq(hc,T)**2 - field_obj.mass_sq(vevhc,0)**2)) / (64*np.math.pi**2)
+
+            return tf.math.real(potV)
 
          elif renorm['scheme'] == 'On-shell':
-            pass
+            frac = (3.0 / 2.0)
+
+            for field_obj in self.field_object_list:
+               pass # check the cut-off reg Mathematica implementation
          
          else:
             raise ValueError
@@ -93,13 +90,26 @@ class model:
          
 
    def cw_potential_deriv(self, h, Temp, **renorm):
+      hc = tf.cast(h, tf.complex64)
+      vevhc = tf.cast(self.params['vevh'], tf.complex64)
+      T = Temp/80.0
+      
+      potV = tf.math.real( self.params['mHsq'] * hc + 0.5 * self.params['lmbd'] * hc**3 )
+
       try:
          if renorm['scheme'] == 'MS-Bar':
             mu = renorm['scale']
-         
-         elif renorm['scheme'] == 'On-shell':
-            pass
 
+            for field_obj in self.field_object_list:
+               if field_obj.name in ['w_boson_t', 'w_boson_l', 'z_boson_t', 'z_boson_l', 'photon_l']:
+                  potV += tf.math.real(() / (64 * np.math.pi**2))
+               
+               elif field_obj.name in ['sm_higgs', 'goldstone', 'bsm_scalar', 'b_quark', 't_quark']:
+                  potV += tf.math.real(()/(64 * np.math.pi**2))
+
+         elif renorm['scheme'] == 'On-shell':
+            for field_obj in self.field_object_list:
+               pass
          else:
             raise ValueError
 
@@ -109,15 +119,15 @@ class model:
    # defining the finite-temperature potential and its derivative(s)
    def finite_T_potential(self, h, Temp, large_T_approx: bool):
       hf = tf.cast(h, tf.float32)
-      T = Temp/80
+      T = Temp/80.0
 
       total = -156.33975
 
-      for field_object in self.field_object_list:
-         if field_object.name in ['b_quark', 't_quark']:
-            total += field_object.get_degrees_of_freedom() * fitted_JF(field_object.mass_sq(hf, T)/T**2)
+      for field_obj in self.field_object_list:
+         if field_obj.name in ['b_quark', 't_quark']:
+            total += field_obj.get_dof() * fitted_JF(field_obj.mass_sq(hf, T)/T**2)
          else:
-            total += field_object.get_degrees_of_freedom() * fitted_JB(field_object.mass_sq(hf, T)/T**2)
+            total += field_obj.get_dof() * fitted_JB(field_obj.mass_sq(hf, T)/T**2)
 
       if (not large_T_approx):
          return (T**4) * total / (2*np.math.pi**2)

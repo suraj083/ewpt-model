@@ -260,7 +260,7 @@ class field:
             elif self.name == 'b_quark':
                 pass           
 
-    def get_degrees_of_freedom(self) -> float:
+    def get_dof(self) -> float:
         """ Returns the number of degrees of freedom for individual fields"""
 
         if self.name in ['sm_higgs', 'z_boson_l', 'photon_l']:
