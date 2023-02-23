@@ -14,3 +14,6 @@ def fill_params(list1: list, dict2: dict) -> dict:
 
     else: 
         return dict2
+
+def reg_sq_root(x):
+    pass

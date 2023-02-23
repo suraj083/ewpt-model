@@ -5,7 +5,7 @@ import sys
 import tensorflow as tf
 import numpy as np
 from field import field
-from auxiliary import fill_params
+from auxiliary import fill_params, reg_sq_root
 from fitted_functions import fitted_JB, fitted_JF, fitted_xlogx
 
 params_sm = ['g1', 'g2', 'yt', 'yb', 'mHsq', 'lmbd', 'vevh']
@@ -119,25 +119,37 @@ class model:
    # defining the finite-temperature potential and its derivative(s)
    def finite_T_potential(self, h, Temp, large_T_approx: bool):
       hf = tf.cast(h, tf.float32)
+      hc = tf.cast(hf, tf.complex64)
+
       T = Temp/80.0
 
-      total = -156.33975
-
-      for field_obj in self.field_object_list:
-         if field_obj.name in ['b_quark', 't_quark']:
-            total += field_obj.get_dof() * fitted_JF(field_obj.mass_sq(hf, T)/T**2)
-         else:
-            total += field_obj.get_dof() * fitted_JB(field_obj.mass_sq(hf, T)/T**2)
+      total = 0.0
 
       if (not large_T_approx):
-         return (T**4) * total / (2*np.math.pi**2)
+         for field_obj in self.field_object_list:
+            if field_obj.name in ['b_quark', 't_quark']:
+               total += field_obj.get_dof() * fitted_JF(field_obj.mass_sq(hf, T)/T**2)
+            else:
+               total += field_obj.get_dof() * fitted_JB(field_obj.mass_sq(hf, T)/T**2)
 
-      else:
-         return 0 # may require the regulated square root helper function
+         return (T**4) * (total - 156.33975) / (2*np.math.pi**2)
+
+      else:  # cross-check for errors
+         a_b = np.math.exp(5.4076)
+         a_f = np.math.exp(2.6351)
+
+         for field_obj in self.field_object_list:
+            if field_obj.name in ['b_quark', 't_quark']:
+               total += field_obj.get_dof() * ( (7 * np.math.pi**4 / 360) - (np.math.pi**2 / 24)*field_obj.mass_sq(hf, T) - (1/32) * tf.math.real(tf.math.xlogy(field_obj.mass_sq(hc,T)**2, field_obj.mass_sq(hc,T)/a_f)) )
+            else:
+               total += field_obj.get_dof() * ( (np.math.pi**2 / 12)*field_obj.mass_sq(hf, T) - (np.math.pi / 6)*reg_sq_root(field_obj.mass_sq(hf, T))**3 - (np.math.pi**4 / 45) - (1/32) * tf.math.real(tf.math.xlogy(field_obj.mass_sq(hc,T)**2, field_obj.mass_sq(hc,T)/a_b)) )
+
+         return (T**4) * total / (2*np.math.pi**2) # may require the regulated square root helper function
 
    def finite_T_potential_deriv(self, h, Temp, large_T_approx: bool):
+      ha = tf.cast(h, tf.float32)
+      
       if (not large_T_approx):
-         ha = tf.cast(h, tf.float32)
 
          with tf.GradientTape(persistent=True) as tape:
             tape.watch(ha) 
@@ -145,8 +157,19 @@ class model:
          
          return tape.gradient(VhT, ha)
       
-      else:
-         return 0 # may require the regulated square root helper function
+      else: # cross-check for errors
+         T = Temp / 80.0
+         total = 0.0
+         a_b = np.math.exp(5.4076)
+         a_f = np.math.exp(2.6351)
+
+         for field_obj in self.field_object_list:
+            if field_obj.name in ['b_quark', 't_quark']:
+               total += field_obj.get_dof() * ( -(np.math.pi**2 / 24) - (1/16) * (fitted_xlogx(field_obj.mass_sq(ha,T)) - field_obj.mass_sq(ha,T) * 2.6351) - (1/32) * field_obj.mass_sq(ha,T) )
+            else:
+               total += field_obj.get_dof() * ( (np.math.pi**2 / 12) - (np.math.pi / 4)*reg_sq_root(field_obj.mass_sq(ha, T)) - (1/16) * (fitted_xlogx(field_obj.mass_sq(ha,T)) - field_obj.mass_sq(ha,T) * 5.4076) - (1/32) * field_obj.mass_sq(ha,T) )
+
+         return (T**4) * total / (2*np.math.pi**2) # may require the regulated square root helper function
 
 
    # total potential and its derivative(s)
