@@ -76,18 +76,20 @@ class model:
             if field_obj.name in ['w_boson_t', 'w_boson_l', 'z_boson_t', 'z_boson_l', 'photon_l']:
                frac = (5.0 / 6.0)
 
-            potV = potV + tf.math.real(field_obj.get_dof() * ((tf.math.xlogy(field_obj.mass_sq(hc,T)**2, field_obj.mass_sq(hc,T)/mu**2) - tf.math.xlogy(field_obj.mass_sq(vevhc,0)**2, field_obj.mass_sq(vevhc,0)/mu**2)) - frac*(field_obj.mass_sq(hc,T)**2 - field_obj.mass_sq(vevhc,0)**2)) / (64*np.math.pi**2))
+            potV = potV + tf.math.real(field_obj.get_dof() * ( (tf.math.xlogy(field_obj.mass_sq(hc,T)**2, field_obj.mass_sq(hc,T)/mu**2) - tf.math.xlogy(field_obj.mass_sq(vevhc,0)**2, field_obj.mass_sq(vevhc,0)/mu**2)) - frac*(field_obj.mass_sq(hc,T)**2 - field_obj.mass_sq(vevhc,0)**2) ) / (64*np.math.pi**2))
 
          return potV
 
       elif renorm['scheme'] == "On-shell":
          for field_obj in self.field_object_list:
-            pass # check the cut-off reg Mathematica implementation
+            potV = potV + tf.math.real( field_obj.get_dof() * ( tf.math.xlogy(field_obj.mass_sq(hc,T)**2, field_obj.mass_sq(hc,T)/field_obj.mass_sq(vevhc,T)) - frac*field_obj.mass_sq(hc,T)**2 + 2*field_obj.mass_sq(hc,T)*field_obj.mass_sq(vevhc,T) ) / (64*np.math.pi**2)) # check the cut-off reg Mathematica implementation
+
+         return potV
          
          
    def cw_potential_deriv(self, h, Temp, **renorm):
       #hc = tf.cast(h, tf.complex64)
-      #vevhc = tf.cast(self.params['vevh'], tf.complex64)
+      vevhc = tf.cast(self.params['vevh'], tf.complex64)
       T = Temp/80.0
       
       dpotV = self.params['mHsq'] * h + 0.5 * self.params['lmbd'] * h**3 
@@ -103,13 +105,15 @@ class model:
             if field_obj.name in ['w_boson_t', 'w_boson_l', 'z_boson_t', 'z_boson_l', 'photon_l']:
                const_factor = np.log(mu**2) + (1.0 / 3.0)
                
-            dpotV = dpotV + 2 * field_obj.get_dof() * field_obj.mass_sq_field_deriv(h,T) * (fitted_xlogx(field_obj.mass_sq(h,T)) - field_obj.mass_sq(h,T) * const_factor ) / (64 * np.math.pi**2)
+            dpotV = dpotV + 2 * field_obj.get_dof() * field_obj.mass_sq_field_deriv(h,T) * ( fitted_xlogx(field_obj.mass_sq(h,T)) - field_obj.mass_sq(h,T) * const_factor ) / (64 * np.math.pi**2)
                
          return dpotV
                
       elif renorm['scheme'] == 'On-shell':
          for field_obj in self.field_object_list:
-            pass
+            dpotV = dpotV + 2 * field_obj.get_dof() * field_obj.mass_sq_field_deriv(h,T) * ( fitted_xlogx(field_obj.mass_sq(h,T)) - field_obj.mass_sq(h,T) * (1 + tf.math.real(tf.math.log(field_obj.mass_sq(vevhc,T)))) + 2*field_obj.mass_sq(self.params['vevh'],T) )
+
+         return dpotV
 
 
    # defining the finite-temperature potential and its derivative(s)
