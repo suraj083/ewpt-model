@@ -4,10 +4,12 @@
 
 import tensorflow as tf
 import keras
+import os
 
-model_Jb = keras.models.load_model("Jb_model") 
-model_Jf = keras.models.load_model("Jf_model") 
-model_xlogx = keras.models.load_model("xlogx_model")
+
+model_Jb = keras.models.load_model(f"{os.getcwd()}/ewpt/Jb_model") 
+model_Jf = keras.models.load_model(f"{os.getcwd()}/ewpt/Jf_model") 
+model_xlogx = keras.models.load_model(f"{os.getcwd()}/ewpt/xlogx_model")
 
 
 def fitted_JB(var):

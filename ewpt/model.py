@@ -4,9 +4,9 @@
 import sys
 import tensorflow as tf
 import numpy as np
-from field import field
-from auxiliary import fill_params, reg_sq_root
-from fitted_functions import fitted_JB, fitted_JF, fitted_xlogx
+from ewpt.field import field
+from ewpt.auxiliary import fill_params, reg_sq_root
+from ewpt.fitted_functions import fitted_JB, fitted_JF, fitted_xlogx
 
 params_sm = ['g1', 'g2', 'yt', 'yb', 'mHsq', 'lmbd', 'vevh']
 params_bsm = ['g1', 'g2', 'yt', 'yb', 'mHsq', 'mSsq', 'lmbd', 'lmbd_SH', 'lmbd_S', 'N', 'vevh']
