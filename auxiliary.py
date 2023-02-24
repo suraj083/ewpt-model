@@ -16,8 +16,9 @@ def fill_params(list1: list, dict2: dict) -> dict:
         return dict2
 
 def sqrt_new(x):
-    return (tf.exp(4.767230860012938 * x) - tf.exp(4.767230860012938 * 0.01) - tf.sqrt(0.01) ) * tf.exp(-3000*(x - 0.01)**2 )
+    return (tf.exp(5 * x) - tf.exp(5 * 1e-8) - tf.sqrt(1e-8) ) * tf.exp(-30000*(x - 1e-8)**2 )
 
 
-def reg_sq_root(x):
-    return tf.where(tf.math.less(x, 0.01), sqrt_new(x), tf.sqrt(x))
+def reg_sq_root(x1):
+    x = tf.cast(x1, tf.float32)
+    return tf.where(tf.math.less(x, 1e-8), sqrt_new(x), tf.sqrt(x))
