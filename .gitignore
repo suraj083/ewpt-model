@@ -1,8 +1,11 @@
 .ipynb_checkpoints/*
-/*/.ipynb_checkpoints/*
+*/.ipynb_checkpoints/*
 ./NN-fitting/Jb/.ipynb_checkpoints/*
 ./NN-fitting/Jf/.ipynb_checkpoints/*
-/*/.DS_Store
+*/.DS_Store
 rough.py
 __pycache__/*
 .DS_Store
+Weights/*
+Profiles/*
+Figures/*
