@@ -9,3 +9,4 @@ __pycache__/*
 Weights/*
 Profiles/*
 Figures/*
+*.pyc
